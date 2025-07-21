@@ -1,5 +1,6 @@
 package com.example.challenge_lv1;
 
+import com.example.challenge_lv1.domain.Cart;
 import com.example.challenge_lv1.domain.Menu;
 import com.example.challenge_lv1.domain.MenuItem;
 import com.example.challenge_lv1.enums.Category;
@@ -36,7 +37,8 @@ public class Main {
         Kiosk kiosk = new Kiosk(
                 new ConsoleInputProvider(),
                 new ConsoleOutputWriter(),
-                menuService
+                menuService,
+                new Cart()
         );
         kiosk.run();
     }
