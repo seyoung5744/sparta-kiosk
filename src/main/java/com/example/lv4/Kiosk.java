@@ -1,7 +1,11 @@
 package com.example.lv4;
 
+import com.example.lv4.domain.Menu;
+import com.example.lv4.domain.MenuItem;
+import com.example.lv4.enums.KioskStatus;
 import com.example.lv4.input.InputProvider;
 import com.example.lv4.output.OutputWriter;
+import com.example.lv4.service.MenuService;
 import com.example.lv4.utils.Parser;
 
 import java.util.List;
@@ -10,33 +14,65 @@ public class Kiosk {
 
     private final InputProvider input;
     private final OutputWriter writer;
+    private final MenuService menuService;
 
-    private final List<MenuItem> menuItems;
+    private KioskStatus status = KioskStatus.IN_PROGRESS;
 
-    public Kiosk(InputProvider input, OutputWriter writer, List<MenuItem> menuItems) {
+    public Kiosk(InputProvider input, OutputWriter writer, MenuService menuService) {
         this.input = input;
         this.writer = writer;
-        this.menuItems = menuItems;
+        this.menuService = menuService;
     }
 
     public void run() {
 
-        while (true) {
+        List<Menu> menus = menuService.findAllMenu();
+
+        while (status == KioskStatus.IN_PROGRESS) {
             try {
-                for (int i = 0; i < menuItems.size(); i++) {
-                    MenuItem menuItem = menuItems.get(i);
-                    writer.println(String.format("%s. %-15s | W %s | %s", (i + 1), menuItem.getName(), menuItem.getPrice(), menuItem.getDescription()));
-                }
-                System.out.println("0. 종료");
+                printMainMenu(menus);
+                Long option = Parser.parseLong(input.readInput());
 
-                String option = Parser.parseNum(input.readInput());
-
-                if ("0".equals(option)) {
+                if (option == 0L) {
                     writer.println("프로그램을 종료합니다.");
-                    break;
+                    status = KioskStatus.FINISH;
+                } else {
+                    printMenuItems(option);
                 }
             } catch (RuntimeException e) {
                 writer.println(e.getMessage());
+            }
+        }
+    }
+
+    private void printMainMenu(List<Menu> menus) {
+        writer.println("[ MAIN MENU ]");
+        for (Menu menu : menus) {
+            writer.println(String.format("%d. %s", menu.getId(), menu.getCategory().getDescription()));
+        }
+        writer.println("0. 종료");
+    }
+
+    private void printMenuItems(Long categoryOption) {
+        Menu menu = menuService.findById(categoryOption);
+        List<MenuItem> menuItems = menuService.findAllMenuItemByCategory(menu.getCategory());
+
+        while (true) {
+            writer.println("[ " + menu.getCategory().getDescription().toUpperCase() + " MENU ]");
+            for (MenuItem menuItem : menuItems) {
+                writer.println(String.format("%s. %-15s | W %s | %s", menuItem.getId(), menuItem.getName(), menuItem.getPrice(), menuItem.getDescription()));
+            }
+            writer.println("0. 뒤로가기");
+            Long option = Parser.parseLong(input.readInput());
+
+            if (option == 0L) {
+                return;
+            }
+
+            for (MenuItem menuItem : menuItems) {
+                if (menuItem.getId().equals(option)) {
+                    writer.println("선택한 메뉴 : " + String.format("%-15s | W %s | %s", menuItem.getName(), menuItem.getPrice(), menuItem.getDescription()) + "\n");
+                }
             }
         }
     }
