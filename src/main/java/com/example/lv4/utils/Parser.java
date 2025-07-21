@@ -9,12 +9,12 @@ public abstract class Parser {
      */
     private static final Pattern OPTION_PATTERN = Pattern.compile("^\\d+$");
 
-    public static String parseNum(String input) {
+    public static Long parseLong(String input) {
         boolean isNum = OPTION_PATTERN.matcher(input).matches();
         if (!isNum) {
             throw new RuntimeException(input + "은 유효한 옵션이 아닙니다!");
         }
 
-        return input;
+        return Long.valueOf(input);
     }
 }
