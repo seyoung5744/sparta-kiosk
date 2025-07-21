@@ -3,6 +3,7 @@ package com.example.challenge_lv1.domain;
 import com.example.challenge_lv1.enums.Category;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class MenuItem {
 
@@ -41,11 +42,14 @@ public class MenuItem {
     }
 
     @Override
-    public String toString() {
-        return "MenuItem{" +
-                "name='" + name + '\'' +
-                ", price=" + price +
-                ", description='" + description + '\'' +
-                '}';
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        MenuItem menuItem = (MenuItem) o;
+        return Objects.equals(id, menuItem.id) && Objects.equals(name, menuItem.name) && Objects.equals(price, menuItem.price) && category == menuItem.category;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, price, category);
     }
 }
