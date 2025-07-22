@@ -8,6 +8,9 @@ import com.example.challenge_lv1.input.ConsoleInputProvider;
 import com.example.challenge_lv1.output.ConsoleOutputWriter;
 import com.example.challenge_lv1.repository.MemoryMenuRepository;
 import com.example.challenge_lv1.service.MenuService;
+import com.example.challenge_lv1.view.CartView;
+import com.example.challenge_lv1.view.MenuView;
+import com.example.challenge_lv1.view.OrderView;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -34,11 +37,15 @@ public class Main {
         menuService.save(dessert);
 
 
+        ConsoleOutputWriter writer = new ConsoleOutputWriter();
         Kiosk kiosk = new Kiosk(
                 new ConsoleInputProvider(),
-                new ConsoleOutputWriter(),
+                writer,
                 menuService,
-                new Cart()
+                new Cart(),
+                new MenuView(writer),
+                new CartView(writer),
+                new OrderView(writer)
         );
         kiosk.run();
     }
