@@ -33,8 +33,8 @@ public class Menu {
         return new ArrayList<>(menuItems);
     }
 
-    public Map<Long, MenuItem> getMenuItemMap() {
-        return new HashMap<>(menuItemMap);
+    public MenuItem getMenuItem(Long id) {
+        return menuItemMap.get(id);
     }
 
     public void addMenuItem(MenuItem menuItem) {
