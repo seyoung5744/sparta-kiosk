@@ -1,5 +1,7 @@
 package com.example.challenge.domain;
 
+import com.example.challenge.exception.InvalidOptionException;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +24,16 @@ public class Cart {
         cartItems.add(new CartItem(item));
     }
 
+    public void removeMenuItem(int idx) {
+        if (idx >= cartItems.size()) {
+            throw new InvalidOptionException(idx + "은 유효한 옵션이 아닙니다.");
+        }
+        cartItems.remove(idx);
+    }
+
     /**
      * 각 cartItem 별 (수량 * 가격)
+     *
      * @return 총 가격
      */
     public BigDecimal totalPrice() {
