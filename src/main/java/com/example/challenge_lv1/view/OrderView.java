@@ -5,6 +5,8 @@ import com.example.challenge_lv1.domain.CartItem;
 import com.example.challenge_lv1.domain.MenuItem;
 import com.example.challenge_lv1.output.OutputWriter;
 
+import static com.example.challenge_lv1.enums.Discount.*;
+
 public class OrderView {
 
     private final OutputWriter writer;
@@ -34,6 +36,15 @@ public class OrderView {
         writer.println("");
 
         writer.println("1. 주문      2. 메뉴판");
+    }
+
+    public void printDiscountInfo() {
+        writer.println("");
+        writer.println("할인 정보를 입력해주세요.");
+        writer.println(String.format("1. %s : %d %%", NATIONAL_VETERAN.getDisplayName(), NATIONAL_VETERAN.getDiscountPercent()));
+        writer.println(String.format("2. %s : %d %%", SOLDIER.getDisplayName(), SOLDIER.getDiscountPercent()));
+        writer.println(String.format("3. %s : %d %%", STUDENT.getDisplayName(), STUDENT.getDiscountPercent()));
+        writer.println(String.format("4. %s : %d %%", GENERAL.getDisplayName(), GENERAL.getDiscountPercent()));
     }
 
     public void printOrderCancel(Runnable onConfirm) {

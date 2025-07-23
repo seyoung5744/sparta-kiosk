@@ -3,6 +3,7 @@ package com.example.challenge_lv1;
 import com.example.challenge_lv1.domain.Cart;
 import com.example.challenge_lv1.domain.Menu;
 import com.example.challenge_lv1.domain.MenuItem;
+import com.example.challenge_lv1.enums.Discount;
 import com.example.challenge_lv1.enums.KioskStatus;
 import com.example.challenge_lv1.input.InputProvider;
 import com.example.challenge_lv1.output.OutputWriter;
@@ -17,6 +18,7 @@ import java.util.List;
 public class Kiosk {
 
     private static final String CONFIRM = "1";
+    private static final String CANCEL = "2";
     private static final String EXIT_OPTION = "0";
     private static final String ORDER_OPTION = "4";
     private static final String ORDER_CANCEL_OPTION = "5";
@@ -96,11 +98,19 @@ public class Kiosk {
         }
         orderView.printOrder(cart);
 
-        if (input.readInput().equals(CONFIRM)) {
-            writer.println("주문이 완료되었습니다. 금액은 W " + cart.totalPrice() + " 입니다.");
-            cart.clear();
+        if (input.readInput().equals(CANCEL)) {
+            return;
         }
+
+        orderView.printDiscountInfo();
+
+        String discountOption = input.readInput();
+        Discount discount = Discount.select(discountOption);
+
+        writer.println("주문이 완료되었습니다. 금액은 W " + discount.applyDiscount(cart.totalPrice()) + " 입니다.");
         writer.println("");
+
+        cart.clear();
     }
 
     private void handleOrderCancel() {
