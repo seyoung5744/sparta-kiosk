@@ -3,11 +3,17 @@ package com.example.challenge_lv1;
 import com.example.challenge_lv1.domain.Cart;
 import com.example.challenge_lv1.domain.Menu;
 import com.example.challenge_lv1.domain.MenuItem;
+import com.example.challenge_lv1.enums.Category;
 import com.example.challenge_lv1.enums.Discount;
+import com.example.challenge_lv1.enums.KioskOption;
 import com.example.challenge_lv1.enums.KioskStatus;
+import com.example.challenge_lv1.enums.cart.CartOption;
+import com.example.challenge_lv1.enums.menu.MenuItemOption;
+import com.example.challenge_lv1.enums.menu.MenuOption;
 import com.example.challenge_lv1.input.InputProvider;
 import com.example.challenge_lv1.output.OutputWriter;
 import com.example.challenge_lv1.service.MenuService;
+import com.example.challenge_lv1.utils.MenuItemsUtil;
 import com.example.challenge_lv1.utils.Parser;
 import com.example.challenge_lv1.view.CartView;
 import com.example.challenge_lv1.view.MenuView;
@@ -16,12 +22,6 @@ import com.example.challenge_lv1.view.OrderView;
 import java.util.List;
 
 public class Kiosk {
-
-    private static final String CONFIRM = "1";
-    private static final String CANCEL = "2";
-    private static final String EXIT_OPTION = "0";
-    private static final String ORDER_OPTION = "4";
-    private static final String ORDER_CANCEL_OPTION = "5";
 
     private final InputProvider input;
     private final OutputWriter writer;
@@ -53,43 +53,23 @@ public class Kiosk {
                 menuView.printMainMenu(menus);
                 orderView.printOrderMenuWhenCartIsNotEmpty(cart);
 
-                String option = input.readInput();
+                KioskOption kioskOption = KioskOption.getOption(input.readInput());
 
-                switch (option) {
+                switch (kioskOption) {
                     case EXIT_OPTION -> exit();
                     case ORDER_OPTION -> handleOrder();
                     case ORDER_CANCEL_OPTION -> handleOrderCancel();
-                    default -> {
-                        Long selectMenuOption = Parser.parseLong(option);
-
-                        if (selectMenuOption > menus.size()) {
-                            throw new RuntimeException("유효한 옵션이 아닙니다.");
-                        }
-
-                        Menu menu = menuService.findById(selectMenuOption);
-                        List<MenuItem> menuItems = menuService.findAllMenuItemByCategory(menu.getCategory());
-                        menuView.printMenuItems(menu, menuItems);
-
-                        String menuItemOption = input.readInput();
-
-                        if (menuItemOption.equals(EXIT_OPTION)) {
-                            continue;
-                        }
-
-                        MenuItem menuItem = menu.getMenuItem(Parser.parseLong(menuItemOption));
-                        cartView.printAddCart(menuItem);
-                        String cartOption = input.readInput();
-
-                        if (cartOption.equals(CONFIRM)) {
-                            writer.println(menuItem.getName() + " 이 장바구니에 추가되었습니다.\n");
-                            cart.addMenuItem(menuItem);
-                        }
-                    }
+                    default -> handleMenuSelection(kioskOption);
                 }
             } catch (RuntimeException e) {
                 writer.println(e.getMessage());
             }
         }
+    }
+
+    private void exit() {
+        writer.println("프로그램을 종료합니다.");
+        status = KioskStatus.FINISH;
     }
 
     private void handleOrder() {
@@ -98,15 +78,13 @@ public class Kiosk {
         }
         orderView.printOrder(cart);
 
-        if (input.readInput().equals(CANCEL)) {
+        if (CartOption.isExit(input.readInput())) {
             return;
         }
 
         orderView.printDiscountInfo();
 
-        String discountOption = input.readInput();
-        Discount discount = Discount.select(discountOption);
-
+        Discount discount = Discount.select(input.readInput());
         writer.println("주문이 완료되었습니다. 금액은 W " + discount.applyDiscount(cart.totalPrice()) + " 입니다.");
         writer.println("");
 
@@ -120,8 +98,29 @@ public class Kiosk {
         orderView.printOrderCancel(cart::clear);
     }
 
-    private void exit() {
-        writer.println("프로그램을 종료합니다.");
-        status = KioskStatus.FINISH;
+    private void handleMenuSelection(KioskOption kioskOption) {
+        Menu menu = menuService.findById(Parser.parseLong(kioskOption.getOption()));
+        Category category = menu.getCategory();
+
+        List<MenuItem> menuItems = menuService.findAllMenuItemByCategory(category);
+        menuView.printMenuItems(menu, menuItems);
+
+        String inputOption = input.readInput();
+
+        if (MenuItemOption.isExit(inputOption)) {
+            return;
+        }
+
+        MenuOption[] menuItemByCategory = MenuItemsUtil.getMenuItemsByCategory(category);
+        MenuOption menuOption = MenuItemsUtil.findByOption(menuItemByCategory, inputOption);
+
+        MenuItem menuItem = menu.getMenuItem(Parser.parseLong(menuOption.getOption()));
+        cartView.printAddCart(menuItem);
+
+        if (CartOption.isExit(input.readInput())) {
+            return;
+        }
+        writer.println(menuItem.getName() + " 이 장바구니에 추가되었습니다.\n");
+        cart.addMenuItem(menuItem);
     }
 }
