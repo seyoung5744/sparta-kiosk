@@ -1,5 +1,7 @@
 package com.example.challenge.enums;
 
+import com.example.challenge.exception.InvalidDiscountOptionException;
+
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +41,7 @@ public enum Discount {
         Discount discount = OPTION_MAP.get(option);
 
         if (discount == null) {
-            throw new IllegalArgumentException("잘못된 할인 옵션입니다: " + option);
+            throw new InvalidDiscountOptionException("잘못된 할인 옵션입니다: " + option);
         }
         return discount;
     }

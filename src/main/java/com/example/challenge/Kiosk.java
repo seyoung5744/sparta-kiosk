@@ -10,6 +10,7 @@ import com.example.challenge.enums.KioskStatus;
 import com.example.challenge.enums.cart.CartOption;
 import com.example.challenge.enums.menu.MenuItemOption;
 import com.example.challenge.enums.menu.MenuOption;
+import com.example.challenge.exception.EmptyCartException;
 import com.example.challenge.input.InputProvider;
 import com.example.challenge.output.OutputWriter;
 import com.example.challenge.service.MenuService;
@@ -74,7 +75,7 @@ public class Kiosk {
 
     private void handleOrder() {
         if (cart.isEmpty()) {
-            throw new RuntimeException("장바구니가 비어있습니다. 유효한 옵션이 아닙니다.");
+            throw new EmptyCartException("장바구니가 비어있습니다. 유효한 옵션이 아닙니다.");
         }
         orderView.printOrder(cart);
 
@@ -93,7 +94,7 @@ public class Kiosk {
 
     private void handleOrderCancel() {
         if (cart.isEmpty()) {
-            throw new RuntimeException("장바구니가 비어있습니다. 유효한 옵션이 아닙니다.");
+            throw new EmptyCartException("장바구니가 비어있습니다. 유효한 옵션이 아닙니다.");
         }
         orderView.printOrderCancel(cart::clear);
     }

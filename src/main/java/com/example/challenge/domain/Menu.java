@@ -1,6 +1,7 @@
 package com.example.challenge.domain;
 
 import com.example.challenge.enums.Category;
+import com.example.challenge.exception.InvalidCategoryException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +40,7 @@ public class Menu {
 
     public void addMenuItem(MenuItem menuItem) {
         if (!this.category.equals(menuItem.getCategory())) {
-            throw new IllegalArgumentException("유효하지 않은 카테고리입니다.");
+            throw new InvalidCategoryException("유효하지 않은 카테고리입니다.");
         }
         menuItems.add(menuItem);
         menuItemMap.put(menuItem.getId(), menuItem);
