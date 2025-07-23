@@ -79,7 +79,15 @@ public class Kiosk {
         }
         orderView.printOrder(cart);
 
-        if (CartOption.isExit(input.readInput())) {
+        String inputOption = input.readInput();
+        if (CartOption.isExit(inputOption)) {
+            return;
+        }
+
+        if (CartOption.isCancel(inputOption)) {
+            writer.println("취소할 메뉴 번호를 입력하세요.");
+            String cancelCartItemOption = input.readInput();
+            cart.removeMenuItem(Integer.parseInt(cancelCartItemOption) - 1);
             return;
         }
 

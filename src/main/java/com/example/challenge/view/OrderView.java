@@ -26,16 +26,18 @@ public class OrderView {
 
     public void printOrder(Cart cart) {
         writer.println("[ Orders ]");
-        for (CartItem cartItem : cart.getCartItems()) {
+        for (int i = 0; i < cart.getCartItems().size(); i++) {
+            CartItem cartItem = cart.getCartItems().get(i);
             MenuItem menuItem = cartItem.getMenuItem();
-            writer.println(String.format("수량 : %-2d | %-15s | W %s | %s", cartItem.getQuantity(), menuItem.getName(), menuItem.getPrice(), menuItem.getDescription()));
+            writer.println(String.format("%d. 수량 : %-2d | %-15s | W %s | %s", (i + 1), cartItem.getQuantity(), menuItem.getName(), menuItem.getPrice(), menuItem.getDescription()));
         }
+
         writer.println("");
         writer.println("[ Total  ]");
         writer.println("W " + cart.totalPrice());
         writer.println("");
 
-        writer.println("1. 주문      2. 메뉴판");
+        writer.println("1. 주문      2. 메뉴판      3. 장바구니 취소");
     }
 
     public void printDiscountInfo() {
