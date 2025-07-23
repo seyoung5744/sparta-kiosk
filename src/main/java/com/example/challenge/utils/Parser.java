@@ -1,5 +1,7 @@
 package com.example.challenge.utils;
 
+import com.example.challenge.exception.InvalidOptionException;
+
 import java.util.regex.Pattern;
 
 public abstract class Parser {
@@ -12,7 +14,7 @@ public abstract class Parser {
     public static Long parseLong(String input) {
         boolean isNum = OPTION_PATTERN.matcher(input).matches();
         if (!isNum) {
-            throw new RuntimeException(input + "은 유효한 옵션이 아닙니다!");
+            throw new InvalidOptionException(input + "은 유효한 옵션이 아닙니다!");
         }
 
         return Long.valueOf(input);

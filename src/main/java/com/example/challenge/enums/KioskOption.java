@@ -1,5 +1,7 @@
 package com.example.challenge.enums;
 
+import com.example.challenge.exception.InvalidOptionException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +31,7 @@ public enum KioskOption {
     public static KioskOption getOption(String op) {
         KioskOption kioskOption = options.get(op);
         if (kioskOption == null) {
-            throw new IllegalArgumentException(op + " 는 유효한 옵션이 아닙니다.");
+            throw new InvalidOptionException(op + " 는 유효한 옵션이 아닙니다.");
         }
         return kioskOption;
     }
